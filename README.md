@@ -45,5 +45,14 @@ Note - The above will build and push these images into ECR
  	kubectl apply -f service.yaml
  ```
 
-## Considerations
+## Recommendations
+
+1. Update security groups for nodes
+2. Review IAM policy of codepipeline and codebuild
+3. Scan on push have been turned on by default on ECR repositories. Review the high vulnerabilities and patch the same.
+
+
+## To DO
+1. Setup codepipeline and verify deployments
+2. Run curl tests for the API
 
