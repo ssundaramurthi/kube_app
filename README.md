@@ -52,7 +52,7 @@ Note - The above will build and push these images into ECR
 3. Scan on push have been turned on by default on ECR repositories. Review the high vulnerabilities and patch the same.
 
 
-## To DO
+## To Do
 1. Setup codepipeline and verify deployments
 2. Run curl tests for the API
 
