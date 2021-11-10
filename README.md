@@ -47,12 +47,32 @@ Note - The above will build and push these images into ECR
 
 ## Recommendations
 
-1. Update security groups for nodes
-2. Review IAM policy of codepipeline and codebuild
-3. Scan on push have been turned on by default on ECR repositories. Review the high vulnerabilities and patch the same.
+1. Automate using terraform to create a network loadbalancer along with a listener and a target group. 
+2. Move the nodes to private subnets and update security groups to receive traffic from loadbalancer only on non-ephemeral ports
+3. Update security groups for nodes to accept traffic from your IP on port 31001. Since this is done to test the deployments
+4. Review IAM policy of codepipeline and codebuild
+5. Scan on push have been turned on by default on ECR repositories. Review the high vulnerabilities and patch the same.
+6. Setup Codepipeline and Github action to test changes on infra and app upon pull request creation. Implementation details - will need to be reviewed
+   1. Codepipeline shall contain 4 stages.
+       1. Source - This stage will source the code and store in an artefact bucket
+       2. Build - Builds the app, and conducts tests on the same. Updates result back to github commit. Upon successful completion, sends message to involved parties to review and approve
+       3. Approve - This is a manual step that the approvers conduct in order for the pipeline to proceed
+       4. Deploy - Deploy the app and send out notifications to the Engineering teams
+   2. This point in App lifecycle, the pipeline can  be extended to promote the artifact from build stage into staging environment. However this will have to a manual trigger
+   3. Once staging is validated for, step 2 can be repeated for production. Again this will be a manual trigger.
+   4. If steps 2 and 3 are not feasible due to maturity of DevOps team, then setup similar pipelines for staging and production environments
+7. Setup the kuberenetes app to push access and error logs to Cloudwatch. This must be then ingested into SoC provider (eg: Splunk, QRadar) for ongoing monitoring
+8. Setup Kubernetes dashboard to monitor 
+   1. Setup Kubernetes metrics server
+   2. Create a service account to use with the dashboard using RBAC authorization and ensure this has cluster-admin privileges 
+   3. Once done, get the auth token, start the kube control proxy, launch the kube dashboard and connect using the token
+   4. Prometheus is another alternative to default kube dashboard
+   
 
+9. Once all has been completed run `terraform destroy` to delete the cluster and associated resources
+
+Tips:
+1. If you're planning to use EKS with terraform, it'd be a good idea to separate the provider and EKS cluster definitions in separate directories since the provider will need to be initiated prior to eks.
 
 ## To Do
 1. Setup codepipeline and verify deployments
-2. Run curl tests for the API
-

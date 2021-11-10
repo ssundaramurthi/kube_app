@@ -4,6 +4,8 @@ module "eks" {
   cluster_version = "1.20"
   subnets         = [module.vpc.private_subnets[0], module.vpc.public_subnets[0], module.vpc.public_subnets[1]]
 
+  cluster_endpoint_public_access = true
+  cluster_endpoint_private_access = true
   tags = {
     Environment = "dev"
   }
