@@ -1,0 +1,18 @@
+SHELL:=/bin/bash
+
+deployecr:
+	$(eval ecr_endpoint:=$(shell aws ecr get-authorization-token | jq -r '.authorizationData[] | .proxyEndpoint' | cut -b 9- ))
+
+	aws ecr get-login-password | docker login --username AWS --password-stdin $(ecr_endpoint)
+
+	docker build --tag codebuild-alpine:latest . --file pipeline/Dockerfile
+
+	docker build --tag eks-api:latest . --file app/Dockerfile
+
+	docker tag codebuild-alpine:latest $(ecr_endpoint)/codebuild-alpine:latest
+
+	docker tag eks-api:latest $(ecr_endpoint)/eks-api:latest
+
+	docker push $(ecr_endpoint)/codebuild-alpine:latest
+
+	docker push $(ecr_endpoint)/eks-api:latest
